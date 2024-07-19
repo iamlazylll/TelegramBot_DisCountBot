@@ -1,4 +1,4 @@
-main.py
 .env
 poetry.lock
 pyproject.toml
+secret.json
