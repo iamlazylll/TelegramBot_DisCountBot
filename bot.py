@@ -6,7 +6,7 @@ import math
 import threading
 from datetime import datetime
 import os
-import pytz
+# import pytz
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -32,7 +32,7 @@ def send_welcome(message):
                         \n- 請勿重複、頻繁輸入指令，否則將影響您的使用體驗。\
                         \n \
                         \n這不是威脅，你已經被警告過了。\
-                        \n-[回報連結](https://www.youtube.com/watch?v=xvFZjo5PgG0)", disable_web_page_preview = True)
+                        \n-[回報連結](https://sniplink.xyz/RXCxey)", disable_web_page_preview = True)
 bot_info = bot.get_me()  # Fetches the bot's information
 bot_name = bot_info.first_name  # Gets the bot's first name
 
@@ -82,7 +82,7 @@ def add_web(message):
                 bot.reply_to(message, f"{site_name}成功加入篩選器")
                 save_unpreferences()
                 return
-    bot.reply_to(message, "此網站不屬於我的預設清單，請透過此連結進行推薦回報。[回報連結](https://www.youtube.com/watch?v=xvFZjo5PgG0)", disable_web_page_preview = True)
+    bot.reply_to(message, "此網站不屬於我的預設清單，請透過此連結進行推薦回報。[回報連結](https://sniplink.xyz/RXCxey)", disable_web_page_preview = True)
 
 # /del 指令：將指定購物網站移出黑名單
 @bot.message_handler(commands=["del"])
@@ -102,7 +102,7 @@ def delete_web(message):
             else:
                 bot.reply_to(message, f"{site_name}不在你的篩選器中")
                 return
-    bot.reply_to(message, "此網站不屬於我的預設清單，請透過此連結進行推薦回報。[回報連結](https://www.youtube.com/watch?v=xvFZjo5PgG0)", disable_web_page_preview = True)
+    bot.reply_to(message, "此網站不屬於我的預設清單，請透過此連結進行推薦回報。[回報連結](https://sniplink.xyz/RXCxey)", disable_web_page_preview = True)
 
 # /reset 指令：重置黑名單
 @bot.message_handler(commands=['re'])

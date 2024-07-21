@@ -127,7 +127,7 @@ def formatjson():
         # json.dump(dat, ff, indent=4)
 def timing():
     formatjson()
-schedule.every(1).second.do(timing)
+schedule.every(3).seconds.do(timing)
 # schedule.add()
 
 # task = threading.Thread(target=timing)
