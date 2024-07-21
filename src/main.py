@@ -29,6 +29,7 @@ def send_time_now(message):
 # def rick_roll_LOL(message, commands=['sing']):
 #     lyricss = ""
 #     bot.reply_to(message.chat.id, f"{currect_time_str}")
+# print(f"[link](https://shopee.tw/search?keyword={kwd})")
 @bot.message_handler(commands=['discount'])
 def demo_msg(message):
     text='嗨👋~以下是今天的優惠資訊:\n蝦皮：\n    9.3折[低消2000][商城](https://shopee.tw/)\n    9.5折[低消2000][商城](https://shopee.tw/)'

@@ -4,22 +4,42 @@ from bs4 import BeautifulSoup
 import telebot
 
 # 輸入你的 Telegram Bot API Token 和你的 Telegram 聯絡 ID（可以是你的用戶 ID 或群組 ID）
-fs = open('secret.json')
-tken = json.load(fs)
+# fs = open('secret.json')
+# tken = json.load(fs)
 # 設置 Telegram Bot
-bot = telebot.TeleBot(tken["Secrets"]["TOKEN"], parse_mode=None)
-
+# bot = telebot.TeleBot(tken["Secrets"]["TOKEN"], parse_mode=None)  
+header = {"user-agent": 
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'}
 # 定義獲取優惠的函數
 
-url = 'https://shopee.tw/m/superdeals'  # 替換成你想抓取的購物網站的 URL
+url = 'https://24h.pchome.com.tw/activity/coupon'  # 替換成你想抓取的購物網站的 URL
 response = requests.get(url)
 soup = BeautifulSoup(response.text, 'html.parser')
 # print(soup)
 # 假設優惠信息在 class="discount" 的元素中
-discount_elements = soup.find_all(class_="zFFgzU")
+
+# elements_paymethod = soup.find_all()
+# discount_elements = soup.find_all(class_="coupon__collection")
+# for e in discount_elements:
+#     print(e.)
 # print(discount_elements)
-for dd in discount_elements:
-    print(dd.text)
+# print(discount_elements)  
+# fss = open("bruhh.html", 'w')
+# fss.write(discount_elements)
+# fss.close()
+# print(discount_elements)
+# Open a file in write mode
+# with open('results.html', 'w', encoding='utf-8') as file:
+    # for element in discount_elements:
+    #     # Write each element's HTML to the file
+    #     file.write(str(element) + '\n')
+# with open('orig.html', 'w') as filess:
+#     filess.write(soup.text)
+# with open("responded.html", 'w') as ff:
+#     ff.write(discount_elements)
+# for dd in discount_elements:
+#     print(dd)
+#     print(dd.text)
 
 # discount_info = []
 # for element in discount_elements:

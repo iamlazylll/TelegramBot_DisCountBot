@@ -1,0 +1,20 @@
+<section class="coupon__collection">
+<div class="container">
+<div class="h2">
+<template v-for="(item, index) in getAllCollection">
+<getall-component :ga="'allCollectionCoupone'" :islogin="islogin" :item="item" :title-text="'åé¡å¤¯å¸'"></getall-component>
+</template>
+</div>
+<ul class="row coupon">
+<template v-for="(item, index) in collection3c">
+<collection-component :collection-name="'3c'" :islogin="islogin" :item="item" @update="updategetAllCollection" v-if="index &lt; 12"></collection-component>
+</template>
+<template v-for="(item, index) in collectionCe">
+<collection-component :collection-name="'ce'" :islogin="islogin" :item="item" @update="updategetAllCollection" v-if="index &lt; 12"></collection-component>
+</template>
+<template v-for="(item, index) in collectionFood">
+<collection-component :collection-name="'food'" :islogin="islogin" :item="item" @update="updategetAllCollection" v-if="index &lt; 12"></collection-component>
+</template>
+</ul>
+</div>
+</section>
