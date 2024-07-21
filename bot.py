@@ -14,29 +14,21 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 with open('secret.json', 'r') as sec:
     secinfo = json.load(sec)
 BOT_TOKEN = secinfo["TOKEN"]
-CHAT_ID = secinfo["CHAT_ID"]
+CHAT_ID = secinfo["GROUP_ID"]
 bot=telebot.TeleBot(BOT_TOKEN, parse_mode="markdown")
 
 @bot.message_handler(commands=['help'])
 def send_welcome(message):
-    bot.reply_to(message,f"這款Telegram bot會在每天凌晨12點檢查各商城是否有優惠方案並發送優惠活動通知至您的Telegram帳號，確保您不會錯過任何優惠訊息。")
+    bot.reply_to(message,f"這款Telegram bot會檢查各商城是否有優惠方案並發送優惠活動通知至您的Telegram帳號，確保您不會錯過任何優惠訊息。")
     bot.send_message(message.chat.id, f"你知道的，我並沒有智能。所以請使用以下指令來命令我： \
-                        \n1. /add <網站名稱> ：將指定購物網站存入黑名單 \
-                        \n- 例如： /add PChome \
-                        \n2. /del <網站名稱> ：將指定購物網站移出黑名單 \
-                        \n- 例如： /del ET \
-                        \n3. /re ：重置黑名單（重置為預設） \
-                        \n4. /list ：列出黑名單（預設為全部） \
-                        \n5. /search <商品名稱> ：使用你黑名單內的購物網站搜尋商品 \
+                        \n1. /check：主動傳送推播訊息 \
+                        \n2. /re ：重置黑名單（重置為預設） \
+                        \n3. /list ：列出黑名單（預設為全部） \
+                        \n4. /search <商品名稱> ：使用你黑名單內的購物網站搜尋商品 \
                         \n- 例如： /search 肥皂 \
                         \n \
-                        \n使用說明： \
-                        \n- 購物網站名稱需區分大小寫，且應包含在預設列表中的名稱部分。 \
-                        \n- 您的黑名單將在使用中保存，即使在重新啟動機器人後也會保持不變。 \
-                        \n \
                         \n注意事項： \
-                        \n- 如果你試圖添加已經存在於黑名單中的購物網站，將不會進行重複添加。 \
-                        \n- 當你嘗試刪除不存在於黑名單中的購物網站時，將收到相應的通知訊息。\
+                        \n- 您的黑名單將在使用中保存，即使在重新啟動機器人後也會保持不變。 \
                         \n \
                         \n這不是威脅，你已經被警告過了。")
 bot_info = bot.get_me()  # Fetches the bot's information
@@ -53,7 +45,7 @@ default_sites = [
     {"name": "momo", "url": "https://www.momoshop.com.tw/search/searchShop.jsp?keyword="},
     {"name": "PChome", "url": "https://24h.pchome.com.tw/search/?q="},
     {"name": "yahoo", "url": "https://tw.buy.yahoo.com/search/product?p="},
-    {"name": "樂天", "url": "https://www.rakuten.com.tw/search/="},
+    {"name": "樂天", "url": "https://www.rakuten.com.tw/search/"},
     {"name": "酷澎coupang", "url": "https://www.tw.coupang.com/search?q="},
     {"name": "ETMall東森", "url": "https://www.etmall.com.tw/Search?keyword="},
     {"name": "松果", "url": "https://www.pcone.com.tw/search?q="}
@@ -118,8 +110,8 @@ def list_reset(message):
     save_unpreferences()
     bot.reply_to(message, "重置成功")
 
-def gen_markup(message):
-    user_id = str(message.from_user.id)
+def gen_markup(user_id):
+    # user_id = str(message.from_user.id)
     markup = InlineKeyboardMarkup()
     markup.row_width = 2
     item_list = [site["name"] for site in default_sites]
@@ -145,24 +137,27 @@ def gen_markup(message):
 def callback_query(call):
     user_id = str(call.from_user.id)
     site_name = call.data
+    if user_id not in unpreferences.keys():
+        unpreferences[user_id] = []
     for site in default_sites:
         if site_name in site["name"]:
             if site in unpreferences[user_id]:
                 unpreferences[user_id].remove(site)
-                bot.send_message(call.message.chat.id, f"{site['name']}成功從你的黑名單中移除")
+                # bot.send_message(call.message.chat.id, f"{site['name']}成功從你的黑名單中移除")
                 save_unpreferences()
-                return
+                break
             else:
                 unpreferences[user_id].append(site)
-                bot.send_message(call.message.chat.id, f"{site_name}成功加入黑名單")
+                # bot.send_message(call.message.chat.id, f"{site_name}成功加入黑名單")
                 save_unpreferences()
-                return
+                break
+    bot.edit_message_reply_markup(chat_id = call.message.chat.id, message_id=call.message.message_id, reply_markup=gen_markup(str(call.from_user.id)))
 
 # /list 指令：列出用戶的黑名單
 @bot.message_handler(commands=['list'])
 def list_preference(message):
     # user_id = str(message.from_user.id)
-    bot.reply_to(message, f"你的黑名單在這：(⭕️代表此網站將被允許用於搜尋關鍵字，❌則反之)", reply_markup=gen_markup(message))
+    bot.reply_to(message, f"你的黑名單在這：(⭕️代表此網站將被允許用於搜尋關鍵字，❌則反之)", reply_markup=gen_markup(str(message.from_user.id)))
 
 # /search 指令：根據用戶偏好網站進行搜尋
 @bot.message_handler(commands=["search"])
@@ -191,6 +186,9 @@ def send_search(message):
     bot.send_message(message.chat.id, result)
 
 @bot.message_handler(commands=['check'])
+def check_discount(message):
+    discount()
+
 def discount(): # 用戶主動
     if os.path.exists("pchome_coupon_.json"):
         with open('pchome_coupon_.json','r', encoding="utf-8") as file:
@@ -223,18 +221,18 @@ def discount(): # 用戶主動
     return
 
 
-lastSendTime = ""
+lash_hash = ""
 
 def checkdailydiscount():
-    global lastSendTime
-    Yearnow = datetime.now(pytz.timezone('Asia/Taipei')).year
-    Monthnow = datetime.now(pytz.timezone('Asia/Taipei')).month
-    Daynow = datetime.now(pytz.timezone('Asia/Taipei')).day
-    Timenow = f"{Yearnow}{Monthnow}{Daynow}"
-    if lastSendTime != Timenow:
-        discount()
-        lastSendTime = Timenow
-    return
+    global lash_hash
+    if os.path.exists("pchome_coupon_.json"):
+        with open('pchome_coupon_.json','r', encoding="utf-8") as file:
+            import_information = json.load(file)
+        current_hash = hash(json.dumps(import_information))
+
+        if lash_hash != current_hash:
+            discount()
+            lash_hash = current_hash
 
 # schedule.every().day.at("00:00").do(discount)
 def run():
