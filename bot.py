@@ -22,15 +22,17 @@ def send_welcome(message):
     bot.reply_to(message,f"這款Telegram bot會檢查各商城是否有優惠方案並發送優惠活動通知至您的Telegram帳號，確保您不會錯過任何優惠訊息。")
     bot.send_message(message.chat.id, f"你知道的，我並沒有智能。所以請使用以下指令來命令我： \
                         \n1. /check：主動傳送推播訊息 \
-                        \n2. /re ：重置黑名單（重置為預設） \
-                        \n3. /list ：列出黑名單（預設為全部） \
-                        \n4. /search <商品名稱> ：使用你黑名單內的購物網站搜尋商品 \
+                        \n2. /re ：清空篩選器 \
+                        \n3. /list ：列出所有購物網站，可用按鈕將購物網站加入篩選器 \
+                        \n4. /search <商品名稱> ：使用不在篩選器的購物網站搜尋商品 \
                         \n- 例如： /search 肥皂 \
                         \n \
                         \n注意事項： \
-                        \n- 您的黑名單將在使用中保存，即使在重新啟動機器人後也會保持不變。 \
+                        \n- 您的篩選器將在使用中保存，即使在重新啟動機器人後也會保持不變。 \
+                        \n- 請勿重複、頻繁輸入指令，否則將影響您的使用體驗。\
                         \n \
-                        \n這不是威脅，你已經被警告過了。")
+                        \n這不是威脅，你已經被警告過了。
+                        \n-[回報連結](https://www.youtube.com/watch?v=dQw4w9WgXcQ)", disable_web_page_preview = True)
 bot_info = bot.get_me()  # Fetches the bot's information
 bot_name = bot_info.first_name  # Gets the bot's first name
 
@@ -73,11 +75,11 @@ def add_web(message):
     for site in default_sites:
         if site_name in site["name"]:
             if site in unpreferences[user_id]:
-                bot.reply_to(message, f"{site_name}已存在於你的黑名單中")
+                bot.reply_to(message, f"{site_name}已存在於你的篩選器中")
                 return
             else:
                 unpreferences[user_id].append(site)
-                bot.reply_to(message, f"{site_name}成功加入黑名單")
+                bot.reply_to(message, f"{site_name}成功加入篩選器")
                 save_unpreferences()
                 return
     bot.reply_to(message, "此網站不屬於我的預設清單，請透過此連結進行推薦回報。[回報連結](https://www.youtube.com/watch?v=dQw4w9WgXcQ)", disable_web_page_preview = True)
@@ -94,11 +96,11 @@ def delete_web(message):
         if site_name in site["name"]:
             if site['name'] in unpreferences_sites:
                 unpreferences[user_id].remove(site)
-                bot.reply_to(message, f"{site['name']}成功從你的黑名單中移除")
+                bot.reply_to(message, f"{site['name']}成功從你的篩選器中移除")
                 save_unpreferences()
                 return
             else:
-                bot.reply_to(message, f"{site_name}不在你的黑名單中")
+                bot.reply_to(message, f"{site_name}不在你的篩選器中")
                 return
     bot.reply_to(message, "此網站不屬於我的預設清單，請透過此連結進行推薦回報。[回報連結](https://www.youtube.com/watch?v=dQw4w9WgXcQ)", disable_web_page_preview = True)
 
@@ -157,7 +159,7 @@ def callback_query(call):
 @bot.message_handler(commands=['list'])
 def list_preference(message):
     # user_id = str(message.from_user.id)
-    bot.reply_to(message, f"你的黑名單在這：(⭕️代表此網站將被允許用於搜尋關鍵字，❌則反之)", reply_markup=gen_markup(str(message.from_user.id)))
+    bot.reply_to(message, f"你的篩選器在這：(⭕️代表此網站將被允許用於搜尋關鍵字，❌則反之)", reply_markup=gen_markup(str(message.from_user.id)))
 
 # /search 指令：根據用戶偏好網站進行搜尋
 @bot.message_handler(commands=["search"])
